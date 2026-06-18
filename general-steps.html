@@ -50,12 +50,30 @@
     background: #151d2b;
     border: 1px solid #1e293b;
     border-radius: 12px;
-    padding: 24px 28px;
     margin-bottom: 24px;
+    overflow: hidden;
   }
   .step-card:hover { border-color: #334155; }
-  .step-title { font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 4px; }
-  .step-context { font-size: 13px; color: #64748b; margin-bottom: 16px; }
+  .step-card summary {
+    padding: 24px 28px;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .step-card summary::-webkit-details-marker { display: none; }
+  .step-card summary::after {
+    content: "▸";
+    margin-left: auto;
+    font-size: 14px;
+    color: #475569;
+    transition: transform 0.2s;
+  }
+  .step-card[open] summary::after { transform: rotate(90deg); }
+  .step-card-body { padding: 0 28px 24px; }
+  .step-title { font-size: 18px; font-weight: 700; color: #ffffff; }
+  .step-context { font-size: 13px; color: #64748b; margin-top: 4px; }
   .fork { display: grid; gap: 12px; margin-top: 12px; }
   .fork-2 { grid-template-columns: 1fr 1fr; }
   .fork-3 { grid-template-columns: 1fr 1fr 1fr; }
@@ -122,12 +140,16 @@
 <h1>Steps to Building Search</h1>
 <p class="subtitle">These are conceptual steps, not a rigid sequence. In practice there's back-and-forth — users revisit decisions, skip ahead, and iterate. The ordering here is roughly chronological for ease of understanding, but a facilitated experience (AI or human) doesn't have to follow this order. Some steps are conditional (e.g., embedding strategy only applies if vectors are involved). Users with more experience will skip steps or make decisions instantly; newer users will loop back as they learn what works.</p>
 
+<div style="margin-bottom: 24px;">
+  <button id="toggle-all" style="background: #1e293b; border: 1px solid #334155; color: #94a3b8; padding: 6px 14px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: border-color 0.2s;">Collapse all</button>
+</div>
+
 <!-- STEP 1 -->
 <div class="step" data-step="1">
   <div class="step-number">1</div>
-  <div class="step-card">
-    <div class="step-title">Primary retrieval pattern</div>
-    <div class="step-context">The user is answering: "how do people find things in my app?" This shapes everything downstream — query types, mapping, embedding decisions, and what "good results" means.</div>
+  <details class="step-card" open>
+    <summary><div><div class="step-title">Primary retrieval pattern</div><div class="step-context">The user is answering: "how do people find things in my app?" This shapes everything downstream — query types, mapping, embedding decisions, and what "good results" means.</div></div></summary>
+    <div class="step-card-body">
 
     <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 16px;">
       <div style="background: #1a2836; border-radius: 8px; padding: 14px;">
@@ -162,14 +184,15 @@
       <a href="es3-vs-vectordb.html" style="display: inline-block; margin-top: 10px; font-size: 12px; color: #00bfb3; text-decoration: none;">Full comparison: signals, pricing, defaults, and the gray zone →</a>
     </div>
   </div>
+</details>
 </div>
 
 <!-- STEP 2 -->
 <div class="step" data-step="2">
   <div class="step-number">2</div>
-  <div class="step-card">
-    <div class="step-title">Embedding strategy</div>
-    <div class="step-context">Conditional — only applies if vectors are involved. Keyword-only users skip this step.</div>
+  <details class="step-card" open>
+    <summary><div><div class="step-title">Embedding strategy</div><div class="step-context">Conditional — only applies if vectors are involved. Keyword-only users skip this step.</div></div></summary>
+    <div class="step-card-body">
     <div style="background: #1a2836; border-left: 3px solid #fbbf24; border-radius: 0 6px 6px 0; padding: 8px 12px; margin-bottom: 12px; font-size: 12px; color: #94a3b8;">
       <strong style="color: #fbbf24;">Ingest model = query model:</strong> The model you embed with at ingest time must be the same model used at query time. If you change models later, you have to re-embed all your data. This also applies to BYO vectors — whatever generates embeddings for your documents must also generate the query embedding.
     </div>
@@ -220,14 +243,15 @@
       <strong style="color: #94a3b8;">Applies to Inference endpoint + BYO only:</strong> Quantization (compress vectors — tradeoff: recall vs cost) and chunking (how to split long documents before embedding). With semantic_text/semantic, these are handled automatically.
     </div>
   </div>
+</details>
 </div>
 
 <!-- STEP 3 -->
 <div class="step" data-step="3">
   <div class="step-number">3</div>
-  <div class="step-card">
-    <div class="step-title">Mapping</div>
-    <div class="step-context">Conditional — can be skipped initially. If you're exploring, load data with no mapping and Elasticsearch auto-detects field types. Come back to define intentional mapping once you know what you're working with.</div>
+  <details class="step-card" open>
+    <summary><div><div class="step-title">Mapping</div><div class="step-context">Conditional — can be skipped initially. If you're exploring, load data with no mapping and Elasticsearch auto-detects field types. Come back to define intentional mapping once you know what you're working with.</div></div></summary>
+    <div class="step-card-body">
     <div class="comparison" style="margin-top: 12px;">
       <div class="comparison-col" style="border-color: #fbbf24;">
         <h4 style="color: #fbbf24;">Mapping decisions</h4>
@@ -260,14 +284,15 @@
       Most users reindex several times as they refine — add vectors, change field types, clean up data. Aliases make each reindex zero-downtime.
     </div>
   </div>
+</details>
 </div>
 
 <!-- STEP 4 -->
 <div class="step" data-step="4">
   <div class="step-number">4</div>
-  <div class="step-card">
-    <div class="step-title">Get data in</div>
-    <div class="step-context">You write a script that pulls data from its source and bulk-loads it into Elasticsearch. Pick a language, connect to the source, run the script.</div>
+  <details class="step-card" open>
+    <summary><div><div class="step-title">Get data in</div><div class="step-context">You write a script that pulls data from its source and bulk-loads it into Elasticsearch. Pick a language, connect to the source, run the script.</div></div></summary>
+    <div class="step-card-body">
 
     <div style="font-size: 12px; font-weight: 600; color: #cbd5e1; margin-top: 14px; margin-bottom: 4px;">Choose a language for your script</div>
     <div style="font-size: 12px; color: #94a3b8; margin-bottom: 10px;">Elasticsearch is an API. You need a language to write a script that connects to your cluster, reads from your data source, and bulk-loads documents. This determines which client library you use and what the generated code looks like.</div>
@@ -331,14 +356,15 @@
       <strong style="color: #cbd5e1;">Alternative order:</strong> Some users flip Steps 2–3 and 4 — they load data first (no mapping) to see what they're working with, then come back to decide embedding strategy and mapping after. This exploratory approach works well when the schema is unknown or messy.
     </div>
   </div>
+</details>
 </div>
 
 <!-- STEP 5 -->
 <div class="step" data-step="5">
   <div class="step-number">5</div>
-  <div class="step-card">
-    <div class="step-title">Learn to query & test results</div>
-    <div class="step-context">Elasticsearch uses its own query language (Query DSL) — a JSON-based format, not SQL or GraphQL. Queries must be tailored to your actual mapping (right field names, right query type per field). This step is about learning the syntax, choosing query types, and confirming your data is searchable.</div>
+  <details class="step-card" open>
+    <summary><div><div class="step-title">Learn to query & test results</div><div class="step-context">Elasticsearch uses its own query language (Query DSL) — a JSON-based format, not SQL or GraphQL. Queries must be tailored to your actual mapping (right field names, right query type per field). This step is about learning the syntax, choosing query types, and confirming your data is searchable.</div></div></summary>
+    <div class="step-card-body">
 
     <div style="background: #1a2836; border-left: 3px solid #64748b; border-radius: 0 6px 6px 0; padding: 8px 12px; margin-bottom: 14px; font-size: 12px; color: #94a3b8;">
       <strong style="color: #cbd5e1;">Learning is part of the work here.</strong> Query DSL is proprietary to Elasticsearch — users need to find or be given queries specific to their fields and retrieval pattern. A generic tutorial won't be enough because the queries depend on what was actually mapped and indexed.
@@ -395,6 +421,7 @@
       <strong style="color: #cbd5e1;">No UI yet.</strong> You're testing via Dev Tools (Kibana console), cURL, or your client library — hitting the API directly. The frontend comes later (Step 6).
     </div>
   </div>
+</details>
 </div>
 
 <!-- INCREMENTAL INGEST CALLOUT -->
@@ -408,9 +435,9 @@
 <!-- STEP 6 -->
 <div class="step" data-step="6">
   <div class="step-number">6</div>
-  <div class="step-card">
-    <div class="step-title">What consumes the results?</div>
-    <div class="step-context">You have to choose one of these paths and build it — Elasticsearch returns JSON, everything after that is your responsibility.</div>
+  <details class="step-card" open>
+    <summary><div><div class="step-title">What consumes the results?</div><div class="step-context">You have to choose one of these paths and build it — Elasticsearch returns JSON, everything after that is your responsibility.</div></div></summary>
+    <div class="step-card-body">
     <div class="comparison">
       <div class="comparison-col col-human">
         <h4>Human (search bar) → Build a frontend</h4>
@@ -445,14 +472,15 @@
       </div>
     </div>
   </div>
+</details>
 </div>
 
 <!-- STEP 7 -->
 <div class="step" data-step="7">
   <div class="step-number">7</div>
-  <div class="step-card">
-    <div class="step-title">Relevance tuning</div>
-    <div class="step-context">Iterative loop — not a one-time step</div>
+  <details class="step-card" open>
+    <summary><div><div class="step-title">Relevance tuning</div><div class="step-context">Iterative loop — not a one-time step</div></div></summary>
+    <div class="step-card-body">
     <span class="option-tag tag-loop">LOOP: tune → eval → tune → eval</span>
     <div class="fork fork-3" style="margin-top: 16px;">
       <div class="option">
@@ -485,14 +513,15 @@
       </div>
     </div>
   </div>
+</details>
 </div>
 
 <!-- STEP 8 -->
 <div class="step" data-step="8">
   <div class="step-number">8</div>
-  <div class="step-card">
-    <div class="step-title">Reindex & data optimization</div>
-    <div class="step-context">Most users reindex several times as they refine — add vectors, change field types, clean up data. Aliases make each reindex zero-downtime.</div>
+  <details class="step-card" open>
+    <summary><div><div class="step-title">Reindex & data optimization</div><div class="step-context">Most users reindex several times as they refine — add vectors, change field types, clean up data. Aliases make each reindex zero-downtime.</div></div></summary>
+    <div class="step-card-body">
     <div class="fork fork-2">
       <div class="option">
         <div class="option-title">Triggers</div>
@@ -519,14 +548,15 @@
       </div>
     </div>
   </div>
+</details>
 </div>
 
 <!-- STEP 9 -->
 <div class="step" data-step="9">
   <div class="step-number">9</div>
-  <div class="step-card">
-    <div class="step-title">Production scale & cost</div>
-    <div class="step-context">Once search works, you need it to work at the right speed, volume, and price point. These are the production decisions.</div>
+  <details class="step-card" open>
+    <summary><div><div class="step-title">Production scale & cost</div><div class="step-context">Once search works, you need it to work at the right speed, volume, and price point. These are the production decisions.</div></div></summary>
+    <div class="step-card-body">
 
     <div style="font-size: 12px; font-weight: 600; color: #cbd5e1; margin-top: 14px; margin-bottom: 8px;">Performance targets</div>
     <ul class="details-list">
@@ -564,9 +594,20 @@
       </div>
     </div>
   </div>
+</details>
 </div>
 
 </div>
+
+<script>
+const btn = document.getElementById('toggle-all');
+const cards = document.querySelectorAll('details.step-card');
+btn.addEventListener('click', () => {
+  const allOpen = [...cards].every(d => d.open);
+  cards.forEach(d => d.open = !allOpen);
+  btn.textContent = allOpen ? 'Expand all' : 'Collapse all';
+});
+</script>
 
 </body>
 </html>
