@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Use Cases ≠ Paths</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    background: #0b1117;
+    color: #e2e8f0;
+    line-height: 1.6;
+    padding: 40px 20px;
+  }
+  .container { max-width: 1000px; margin: 0 auto; }
+  .back-link { font-size: 13px; color: #64748b; text-decoration: none; display: inline-block; margin-bottom: 24px; }
+  .back-link:hover { color: #00bfb3; }
+  h1 { font-size: 32px; font-weight: 800; color: #ffffff; margin-bottom: 12px; }
+  .subtitle { font-size: 15px; color: #94a3b8; margin-bottom: 40px; max-width: 100%; line-height: 1.7; }
+
+  .example { margin-bottom: 36px; }
+  .example-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 12px;
+  }
+  .example-desc {
+    font-size: 13px;
+    color: #94a3b8;
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
+  .paths {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .path {
+    background: #1a2836;
+    border: 1px solid #263040;
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .path-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #cbd5e1;
+    margin-bottom: 6px;
+  }
+  .path-details {
+    font-size: 11px;
+    color: #94a3b8;
+    line-height: 1.6;
+  }
+  .path-details li { margin-bottom: 3px; }
+  .takeaway {
+    margin-top: 48px;
+    padding: 20px;
+    background: #1a2836;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    font-size: 13px;
+    color: #94a3b8;
+    line-height: 1.7;
+  }
+  .takeaway strong { color: #ffffff; }
+  @media (max-width: 768px) { .paths { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="container">
+
+<a class="back-link" href="index.html">← Back</a>
+<h1>Use Cases ≠ Paths</h1>
+<p class="subtitle">Knowing what someone is building doesn't tell you how to onboard them. The same use case label can lead to completely different retrieval patterns, embedding strategies, data architectures, and project types — depending on the specifics underneath.</p>
+
+<div class="example">
+  <div class="example-label">"E-commerce search"</div>
+  <div class="example-desc">Four teams say they're building e-commerce search. Each ends up on a different path:</div>
+  <div class="paths">
+    <div class="path">
+      <div class="path-title">Small catalog, keyword-first</div>
+      <ul class="path-details">
+        <li>500 products, structured fields</li>
+        <li>Facets + filters are the main UX</li>
+        <li>Full-text BM25, no vectors needed</li>
+        <li>ES3, continuous ingest, always-on</li>
+      </ul>
+    </div>
+    <div class="path">
+      <div class="path-title">Large catalog, semantic discovery</div>
+      <ul class="path-details">
+        <li>500K products, users describe what they want</li>
+        <li>"Comfy shoes for standing all day"</li>
+        <li>Semantic search primary, filters secondary</li>
+        <li>Vector DB, batch-loaded, semantic_text</li>
+      </ul>
+    </div>
+    <div class="path">
+      <div class="path-title">Marketplace with multi-tenancy</div>
+      <ul class="path-details">
+        <li>50 sellers, each with their own catalog</li>
+        <li>Hybrid search (keywords + vectors)</li>
+        <li>_slice per tenant, filtered kNN</li>
+        <li>Vector DB, multi-tenant architecture</li>
+      </ul>
+    </div>
+    <div class="path">
+      <div class="path-title">Real-time inventory + search</div>
+      <ul class="path-details">
+        <li>Prices and stock change every minute</li>
+        <li>Keyword search + boosted by availability</li>
+        <li>Continuous ingest from streaming source</li>
+        <li>ES3, always-warm, custom scoring</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="example">
+  <div class="example-label">"RAG chatbot"</div>
+  <div class="example-desc">Three teams building a RAG chatbot. Same label, different everything:</div>
+  <div class="paths">
+    <div class="path">
+      <div class="path-title">Quick internal Q&A</div>
+      <ul class="path-details">
+        <li>50 PDF docs, rarely updated</li>
+        <li>semantic_text, zero config</li>
+        <li>Single index, simple semantic query</li>
+        <li>Vector DB, batch load once</li>
+      </ul>
+    </div>
+    <div class="path">
+      <div class="path-title">Customer support over live data</div>
+      <ul class="path-details">
+        <li>Tickets, docs, and product data — constantly updating</li>
+        <li>Hybrid search (exact order IDs + semantic intent)</li>
+        <li>Multiple indices, continuous ingest</li>
+        <li>ES3, always-on traffic</li>
+      </ul>
+    </div>
+    <div class="path">
+      <div class="path-title">Multi-model with existing pipeline</div>
+      <ul class="path-details">
+        <li>BYO vectors from Cohere + own reranker</li>
+        <li>Dense vector fields, custom chunking</li>
+        <li>Inference endpoint for reranking stage</li>
+        <li>Either project type works</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="example">
+  <div class="example-label">"Recommendations"</div>
+  <div class="example-desc">Two teams building recommendations with opposite architectures:</div>
+  <div class="paths">
+    <div class="path">
+      <div class="path-title">Content recommendations (static corpus)</div>
+      <ul class="path-details">
+        <li>10K articles, embedded once</li>
+        <li>User reads article → find similar</li>
+        <li>Pure kNN, no text search needed</li>
+        <li>Vector DB, batch load, scale-to-zero friendly</li>
+      </ul>
+    </div>
+    <div class="path">
+      <div class="path-title">Product recs (live catalog)</div>
+      <ul class="path-details">
+        <li>Products added/removed daily</li>
+        <li>Similarity + filtered by availability/region</li>
+        <li>Filtered kNN + continuous ingest</li>
+        <li>ES3 or Vector DB — depends on update frequency</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="example">
+  <div class="example-label">"Log search"</div>
+  <div class="example-desc">Same use case, different scale and access patterns:</div>
+  <div class="paths">
+    <div class="path">
+      <div class="path-title">Dev team debugging</div>
+      <ul class="path-details">
+        <li>A few GB/day of app logs</li>
+        <li>Keyword search + time range filters</li>
+        <li>Short retention, simple mapping</li>
+        <li>ES3, data streams, ILM</li>
+      </ul>
+    </div>
+    <div class="path">
+      <div class="path-title">Security team investigation</div>
+      <ul class="path-details">
+        <li>Hundreds of GB/day across dozens of sources</li>
+        <li>Correlation queries, long retention</li>
+        <li>Hot/warm/cold tiers, complex pipelines</li>
+        <li>ES3, heavily optimized ingest + storage</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="takeaway">
+  <strong>The point:</strong> A use case label tells you the general domain, but the onboarding path depends on data volume, update frequency, retrieval pattern, existing infrastructure, multi-tenancy needs, and cost sensitivity. This is why onboarding can't be a static flow keyed off "what are you building?" — it needs to ask follow-up questions and adapt based on the answers.
+</div>
+
+<h1 style="margin-top: 56px; font-size: 28px;">User knowledge ≠ consistent either</h1>
+<p class="subtitle">Even within the same use case and the same path, users arrive with wildly different starting knowledge. This changes how many steps they need help with, which steps they skip, and how much explanation each one requires.</p>
+
+<div class="example">
+  <div class="example-label">Same project, different people</div>
+  <div class="example-desc">Five engineers all building the same thing — hybrid search for a product catalog. Each needs a completely different onboarding experience:</div>
+  <div class="paths">
+    <div class="path">
+      <div class="path-title">Built search on Elasticsearch before</div>
+      <ul class="path-details">
+        <li>Knows Query DSL, mapping, analyzers</li>
+        <li>Skips: language choice, query syntax, basic mapping</li>
+        <li>Needs: what's new (semantic_text, ACORN, RRF), vector-specific setup</li>
+        <li>Loops: minimal — mostly linear</li>
+      </ul>
+    </div>
+    <div class="path">
+      <div class="path-title">Built search on Solr / OpenSearch</div>
+      <ul class="path-details">
+        <li>Knows search concepts, different syntax</li>
+        <li>Skips: "what is an inverted index" explanations</li>
+        <li>Needs: ES-specific query format, mapping differences, migration cleanup</li>
+        <li>Loops: some — translating mental models</li>
+      </ul>
+    </div>
+    <div class="path">
+      <div class="path-title">Backend engineer, no search experience</div>
+      <ul class="path-details">
+        <li>Strong at code, APIs, databases</li>
+        <li>Skips: nothing — everything is new</li>
+        <li>Needs: full explanation of retrieval patterns, Query DSL, relevance concepts</li>
+        <li>Loops: many — learn, try, realize it's wrong, redo</li>
+      </ul>
+    </div>
+    <div class="path">
+      <div class="path-title">Data scientist adding vectors</div>
+      <ul class="path-details">
+        <li>Knows embeddings, models, similarity math</li>
+        <li>Skips: embedding strategy (already decided), chunking, quantization tradeoffs</li>
+        <li>Needs: how to get vectors into ES, kNN query syntax, integration with existing pipeline</li>
+        <li>Loops: few — focused on storage + retrieval mechanics</li>
+      </ul>
+    </div>
+    <div class="path">
+      <div class="path-title">Developer advocate / prototyper</div>
+      <ul class="path-details">
+        <li>Wants fastest path to a working demo</li>
+        <li>Skips: production concerns, cost optimization, multi-tenancy</li>
+        <li>Needs: semantic_text, sample data, working query in 10 minutes</li>
+        <li>Loops: zero ideally — linear happy path</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="takeaway">
+  <strong>The implication:</strong> Onboarding can't assume a single knowledge level. An experienced Elasticsearch user needs "what's new" — not a tutorial. A search-naive backend engineer needs fundamentals before they can make any decisions. The same step might take 10 seconds for one persona and 30 minutes for another. This is the second reason a static checklist fails — it can't adapt its depth.
+</div>
+
+</div>
+</body>
+</html>
