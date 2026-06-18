@@ -204,7 +204,45 @@
 </div>
 
 <div class="takeaway">
-  <strong>The point:</strong> A use case label tells you the general domain, but the onboarding path depends on data volume, update frequency, retrieval pattern, existing infrastructure, multi-tenancy needs, and cost sensitivity. This is why onboarding can't be a static flow keyed off "what are you building?" — it needs to ask follow-up questions and adapt based on the answers.
+  <strong>The point:</strong> A use case label tells you the general domain, but the onboarding path depends on data volume, update frequency, retrieval pattern, existing infrastructure, multi-tenancy needs, cost sensitivity, latency requirements, and expected QPS. This is why onboarding can't be a static flow keyed off "what are you building?" — it needs to ask follow-up questions and adapt based on the answers.
+</div>
+
+<div class="example" style="margin-top: 40px;">
+  <div class="example-label">The hidden variables that change everything</div>
+  <div class="example-desc">Two teams can say "RAG chatbot" and mean completely different operational realities:</div>
+  <div class="paths">
+    <div class="path">
+      <div class="path-title">Latency</div>
+      <ul class="path-details">
+        <li>Search UI needs &lt;200ms — rules out heavy reranking, limits vector dimensions</li>
+        <li>Background RAG pipeline tolerates 2s — can use reranker, larger models, more candidates</li>
+      </ul>
+    </div>
+    <div class="path">
+      <div class="path-title">QPS (queries per second)</div>
+      <ul class="path-details">
+        <li>10 QPS (internal tool) — single shard, minimal infra, cheapest option</li>
+        <li>10,000 QPS (public-facing) — needs replicas, careful shard strategy, always-warm compute</li>
+      </ul>
+    </div>
+    <div class="path">
+      <div class="path-title">Throughput (ingest)</div>
+      <ul class="path-details">
+        <li>Load once, rarely update — batch ingest, optimize for read, force-merge</li>
+        <li>Continuous stream of new data — needs concurrent read/write, refresh intervals, ingest pipelines</li>
+      </ul>
+    </div>
+    <div class="path">
+      <div class="path-title">Cost sensitivity</div>
+      <ul class="path-details">
+        <li>Budget-constrained — quantize aggressively, unpin cold data, scale to zero when idle</li>
+        <li>Performance-first — keep everything in memory, over-provision, pay for speed</li>
+      </ul>
+    </div>
+  </div>
+  <div style="margin-top: 12px; font-size: 12px; color: #64748b; font-style: italic;">
+    None of these are visible from the use case name alone. They only surface when you ask follow-up questions.
+  </div>
 </div>
 
 <h1 style="margin-top: 56px; font-size: 28px;">User knowledge ≠ consistent either</h1>

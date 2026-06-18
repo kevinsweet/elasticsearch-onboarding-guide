@@ -526,7 +526,25 @@
   <div class="step-number">9</div>
   <div class="step-card">
     <div class="step-title">Production scale & cost</div>
-    <div class="step-context">Optimizations for running at scale</div>
+    <div class="step-context">Once search works, you need it to work at the right speed, volume, and price point. These are the production decisions.</div>
+
+    <div style="font-size: 12px; font-weight: 600; color: #cbd5e1; margin-top: 14px; margin-bottom: 8px;">Performance targets</div>
+    <ul class="details-list">
+      <li><strong>Latency</strong> — what's acceptable? Search UIs need &lt;200ms. RAG pipelines might tolerate 500ms+. Reranking adds latency.</li>
+      <li><strong>QPS (queries per second)</strong> — how many concurrent users/requests? 10 QPS vs 10,000 QPS are completely different architectures.</li>
+      <li><strong>Throughput (ingest)</strong> — how fast does data need to get in? Real-time (&lt;1s) vs batch (hourly/daily) changes the design.</li>
+      <li><strong>Index size</strong> — how much data total? 1GB vs 1TB vs 100TB. Affects shard count, tier strategy, cost.</li>
+    </ul>
+
+    <div style="font-size: 12px; font-weight: 600; color: #cbd5e1; margin-top: 20px; margin-bottom: 8px;">Cost levers</div>
+    <ul class="details-list">
+      <li><strong>Compute</strong> — how much search capacity stays warm vs scales to zero? Always-on baseline vs bursty.</li>
+      <li><strong>Storage tiers</strong> — hot (fast, expensive), warm, cold, frozen. What data needs to be instantly searchable vs archived?</li>
+      <li><strong>Vector cost</strong> — quantization reduces memory 4-8x. Tradeoff: small recall loss. At scale this is the biggest lever.</li>
+      <li><strong>Retention</strong> — how long do you keep data? ILM policies, auto-deletion, unpinning idle data.</li>
+    </ul>
+
+    <div style="font-size: 12px; font-weight: 600; color: #cbd5e1; margin-top: 20px; margin-bottom: 8px;">Architecture decisions</div>
     <div class="fork fork-4">
       <div class="option">
         <div class="option-title">Multi-tenancy</div>
@@ -541,8 +559,8 @@
         <div class="option-desc">Filtering inside HNSW traversal. Critical for "similar IN this category."</div>
       </div>
       <div class="option">
-        <div class="option-title">Cost optimization</div>
-        <div class="option-desc">Unpin idle data, adjust compute scaling, choose the right tier for hot/warm/cold data.</div>
+        <div class="option-title">Shard strategy</div>
+        <div class="option-desc">How many shards, what size per shard. Affects both search latency and ingest throughput.</div>
       </div>
     </div>
   </div>
