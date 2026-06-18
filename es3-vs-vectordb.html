@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ES3 vs VectorDB — Project Type Decision</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    background: #0b1117;
+    color: #e2e8f0;
+    line-height: 1.6;
+    padding: 40px 20px;
+  }
+  .container { max-width: 1000px; margin: 0 auto; }
+  .back-link { font-size: 13px; color: #64748b; text-decoration: none; display: inline-block; margin-bottom: 24px; }
+  .back-link:hover { color: #00bfb3; }
+  h1 { font-size: 32px; font-weight: 800; color: #ffffff; margin-bottom: 8px; }
+  .subtitle { font-size: 16px; color: #94a3b8; margin-bottom: 40px; max-width: 700px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<a class="back-link" href="index.html">← Back</a>
+<h1>ES3 vs VectorDB</h1>
+<p class="subtitle">The user is answering: "how do people find things in my app?" The answer determines the project type.</p>
+
+<!-- SIGNALS -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px;">
+  <div style="background: #1a2836; border: 1px solid #1e40af; border-radius: 8px; padding: 20px;">
+    <div style="font-size: 16px; font-weight: 700; color: #60a5fa; margin-bottom: 16px;">Signals → ES3</div>
+    <ul style="list-style: none; padding: 0; font-size: 13px; color: #e2e8f0; line-height: 2;">
+      <li>Users type specific words and expect exact matches</li>
+      <li>Browsing by category, brand, price is the primary navigation</li>
+      <li>Autocomplete / type-ahead is central to the UX</li>
+      <li>Vectors enhance results but don't drive them</li>
+    </ul>
+    <ul style="list-style: none; padding: 0; font-size: 13px; color: #94a3b8; line-height: 2; margin-top: 12px; border-top: 1px solid #263040; padding-top: 12px;">
+      <li>Data changes constantly — VectorDB's aggressive merging is optimized for "load then search," not concurrent read/write</li>
+      <li>Search runs 24/7 — millions of queries at steady throughput</li>
+      <li>Can't tolerate cold starts — users expect instant response always</li>
+    </ul>
+  </div>
+  <div style="background: #1a2836; border: 1px solid #7c3aed; border-radius: 8px; padding: 20px;">
+    <div style="font-size: 16px; font-weight: 700; color: #c084fc; margin-bottom: 16px;">Signals → VectorDB</div>
+    <ul style="list-style: none; padding: 0; font-size: 13px; color: #e2e8f0; line-height: 2;">
+      <li>Users find things by meaning or similarity, not exact keywords</li>
+      <li>Results feed into an LLM, agent, or AI pipeline</li>
+      <li>Vectors are how the whole system works, not an add-on</li>
+    </ul>
+    <ul style="list-style: none; padding: 0; font-size: 13px; color: #94a3b8; line-height: 2; margin-top: 12px; border-top: 1px solid #263040; padding-top: 12px;">
+      <li>Data is loaded in batches — corpus doesn't change every minute</li>
+      <li>Some data goes cold over time — idle tenants, old embeddings</li>
+      <li>Cost should scale with how much data is actively searched, not total stored</li>
+    </ul>
+  </div>
+</div>
+
+<!-- EXAMPLES -->
+<div style="margin-bottom: 32px; font-size: 13px; color: #94a3b8; line-height: 2.2;">
+  <span style="color: #60a5fa;">E-commerce catalog</span> with keyword search, facets, constant inventory updates → <strong style="color: #e2e8f0;">ES3</strong><br>
+  <span style="color: #c084fc;">Knowledge base chatbot</span> that embeds docs and retrieves context for an LLM → <strong style="color: #e2e8f0;">VectorDB</strong><br>
+  <span style="color: #f97316;">Product search + semantic_text</span> for "did you mean" style enhancement → <strong style="color: #e2e8f0;">debatable</strong> (traffic says ES3, Elastic's rule says VectorDB)
+</div>
+
+<!-- WHAT EACH GIVES YOU -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+  <div style="background: #0f1a24; border-radius: 8px; padding: 18px;">
+    <div style="color: #60a5fa; font-weight: 600; font-size: 13px; margin-bottom: 10px;">What ES3 gives you by default</div>
+    <div style="font-size: 12px; color: #94a3b8; line-height: 1.8;">
+      <div>General-purpose index settings (balanced read/write)</div>
+      <div>VCU pricing — auto-scaling compute, search always warm (never drops to zero)</div>
+      <div>No vector-specific optimizations assumed — you add what you need</div>
+    </div>
+  </div>
+  <div style="background: #0f1a24; border-radius: 8px; padding: 18px;">
+    <div style="color: #c084fc; font-weight: 600; font-size: 13px; margin-bottom: 10px;">What VectorDB gives you by default</div>
+    <div style="font-size: 12px; color: #94a3b8; line-height: 1.8;">
+      <div>bfloat16 + DiskBBQ quantization (vectors compressed automatically)</div>
+      <div>Storage-based pricing — per GB pinned × Search Power. Unpin idle data via Inactivity API to reduce cost.</div>
+      <div>Aggressive segment merging (faster reads, better recall)</div>
+      <div>_slice for multi-tenancy (one index, thousands of tenants)</div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING DETAIL -->
+<div style="background: #1a2836; border-radius: 8px; padding: 18px; margin-bottom: 24px;">
+  <div style="font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 10px;">VectorDB Pricing Model (from commercials deck)</div>
+  <div style="font-size: 12px; color: #94a3b8; line-height: 1.8;">
+    <div><strong style="color: #e2e8f0;">Formula:</strong> (Pinned GB × Search Power/100 × $10) + (Indexing GB × $2) + (Unpinned GB × $2)</div>
+    <div><strong style="color: #e2e8f0;">Pinned storage:</strong> All data starts pinned (fast, on SSDs) by default. No configuration needed.</div>
+    <div><strong style="color: #e2e8f0;">Unpinned:</strong> Customer-controlled via Inactivity API. Slower queries, lower cost.</div>
+    <div><strong style="color: #e2e8f0;">Search Power:</strong> Performance multiplier, set automatically for most customers (default 100). Advanced mode for power users.</div>
+    <div><strong style="color: #e2e8f0;">Minimum:</strong> $49/month.</div>
+  </div>
+</div>
+
+<!-- LICENSING -->
+<div style="background: #1a2836; border-radius: 8px; padding: 18px; margin-bottom: 24px;">
+  <div style="font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 10px;">Index Mode & _slice Licensing</div>
+  <div style="font-size: 12px; color: #94a3b8; line-height: 1.8;">
+    <div><strong style="color: #e2e8f0;">index.mode: vectordb</strong> — available to all tiers (Basic + Standard). DiskBBQ (the performance differentiator) stays Enterprise.</div>
+    <div><strong style="color: #e2e8f0;">_slice API</strong> — available to all tiers. Full enforcement (optimized data placement) is Enterprise self-managed only.</div>
+    <div><strong style="color: #e2e8f0;">Why:</strong> _slice isn't vector-specific — locking the API would harm OSS positioning. Optimized enforcement is where Enterprise earns its differentiation.</div>
+  </div>
+</div>
+
+<div style="font-size: 12px; color: #64748b; font-style: italic;">
+  ES3 can do everything VectorDB does (kNN, hybrid, quantization) — you just configure it yourself. VectorDB gives you those optimizations out of the box.
+</div>
+
+</div>
+</body>
+</html>

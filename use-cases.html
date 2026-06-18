@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Use Cases — What Can You Build?</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    background: #0b1117;
+    color: #e2e8f0;
+    line-height: 1.6;
+    padding: 40px 20px;
+  }
+  .container { max-width: 1000px; margin: 0 auto; }
+  .back-link { font-size: 13px; color: #64748b; text-decoration: none; display: inline-block; margin-bottom: 24px; }
+  .back-link:hover { color: #00bfb3; }
+  h1 { font-size: 32px; font-weight: 800; color: #ffffff; margin-bottom: 8px; }
+  .subtitle { font-size: 16px; color: #94a3b8; margin-bottom: 40px; max-width: 700px; }
+  .category { margin-bottom: 40px; }
+  .category-header {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 6px;
+  }
+  .category-desc {
+    font-size: 13px;
+    color: #94a3b8;
+    margin-bottom: 16px;
+    max-width: 700px;
+  }
+  .examples {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+  }
+  .example {
+    background: #1a2836;
+    border: 1px solid #263040;
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .example-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-bottom: 4px;
+  }
+  .example-desc {
+    font-size: 11px;
+    color: #94a3b8;
+    line-height: 1.5;
+  }
+  @media (max-width: 768px) { .examples { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="container">
+
+<a class="back-link" href="index.html">← Back</a>
+<h1>What can you build?</h1>
+<p class="subtitle">Four broad categories of things people build with Elasticsearch. Each breaks down into specific patterns — any of these can be the starting point for onboarding.</p>
+
+<!-- SEARCH UI -->
+<div class="category">
+  <div class="category-header" style="color: #60a5fa;">Search UI for humans</div>
+  <div class="category-desc">People type queries (or browse), see ranked results. The end user is a human interacting with a search bar, filters, or catalog page.</div>
+  <div class="examples">
+    <div class="example">
+      <div class="example-title">E-commerce product search</div>
+      <div class="example-desc">Search by name, filter by brand/price/category, sort by relevance or popularity. Autocomplete. Faceted navigation.</div>
+    </div>
+    <div class="example">
+      <div class="example-title">Site search / docs search</div>
+      <div class="example-desc">Search across a website or documentation. Highlight matching text. Rank by freshness or relevance.</div>
+    </div>
+    <div class="example">
+      <div class="example-title">Internal knowledge base</div>
+      <div class="example-desc">Employees search company wikis, policies, runbooks. Often combined with access control.</div>
+    </div>
+    <div class="example">
+      <div class="example-title">Marketplace / listing search</div>
+      <div class="example-desc">Jobs, real estate, rentals, freelancers. Geo-aware, multi-faceted, often with saved searches and alerts.</div>
+    </div>
+    <div class="example">
+      <div class="example-title">Media / content discovery</div>
+      <div class="example-desc">Search videos, articles, podcasts, courses. Metadata-rich, often with personalized ranking.</div>
+    </div>
+  </div>
+</div>
+
+<!-- LOG / EVENT SEARCH -->
+<div class="category">
+  <div class="category-header" style="color: #34d399;">Log & Event Search</div>
+  <div class="category-desc">Searching through logs, events, traces, or telemetry data. The data looks like observability, but the interaction is search — people query, filter, and drill into results to find what happened.</div>
+  <div class="examples">
+    <div class="example">
+      <div class="example-title">Application log search</div>
+      <div class="example-desc">Developers searching error logs, stack traces, request logs. Filter by service, time range, severity. Find the needle in terabytes.</div>
+    </div>
+    <div class="example">
+      <div class="example-title">Security event investigation</div>
+      <div class="example-desc">Analysts searching auth logs, firewall events, DNS queries. Correlate across sources, filter by IP/user/time window.</div>
+    </div>
+    <div class="example">
+      <div class="example-title">Audit trail search</div>
+      <div class="example-desc">Compliance teams searching who did what and when. Access logs, change records, approval flows. Often needs exact-match and time-range queries.</div>
+    </div>
+    <div class="example">
+      <div class="example-title">IoT / sensor event search</div>
+      <div class="example-desc">Search device telemetry, alert history, state changes. Filter by device ID, event type, threshold breaches.</div>
+    </div>
+    <div class="example">
+      <div class="example-title">Transaction / request tracing</div>
+      <div class="example-desc">Find a specific request across distributed services. Search by trace ID, user ID, error code. Reconstruct what happened end-to-end.</div>
+    </div>
+  </div>
+</div>
+
+<!-- RECS / SIMILARITY -->
+<div class="category">
+  <div class="category-header" style="color: #c084fc;">Recs / Similarity</div>
+  <div class="category-desc">"Find things like this one." The system takes an item (or a user profile) and returns similar items. No explicit query from the user — the input is an embedding, not typed text.</div>
+  <div class="examples">
+    <div class="example">
+      <div class="example-title">Product recommendations</div>
+      <div class="example-desc">"Customers who viewed this also liked..." Embed products, find nearest neighbors to the one being viewed.</div>
+    </div>
+    <div class="example">
+      <div class="example-title">Content you might like</div>
+      <div class="example-desc">Articles, videos, songs similar to what you've consumed. User preference vector → find nearest content vectors.</div>
+    </div>
+    <div class="example">
+      <div class="example-title">Duplicate / near-duplicate detection</div>
+      <div class="example-desc">Find copies, plagiarism, similar support tickets, duplicate listings. Embed → threshold on cosine similarity.</div>
+    </div>
+    <div class="example">
+      <div class="example-title">Resume ↔ job matching</div>
+      <div class="example-desc">Embed resumes and job descriptions into the same space. Find best matches in either direction.</div>
+    </div>
+    <div class="example">
+      <div class="example-title">Image / visual similarity</div>
+      <div class="example-desc">"Find visually similar products." Embed images (CLIP, etc.), retrieve by visual similarity. Reverse image search.</div>
+    </div>
+  </div>
+</div>
+
+<!-- RAG / CHATBOT / Q&A -->
+<div class="category">
+  <div class="category-header" style="color: #00bfb3;">RAG / Chatbot / Q&A</div>
+  <div class="category-desc">Retrieve relevant context from your data and feed it to an LLM to generate grounded answers. The end user asks a question in natural language; the system retrieves, then generates.</div>
+  <div class="examples">
+    <div class="example">
+      <div class="example-title">Customer support chatbot</div>
+      <div class="example-desc">User asks a question, system retrieves relevant docs/FAQs, LLM generates an answer citing sources.</div>
+    </div>
+    <div class="example">
+      <div class="example-title">Internal Q&A over docs</div>
+      <div class="example-desc">"What's our refund policy?" — retrieves from policy docs, generates a direct answer with citations.</div>
+    </div>
+    <div class="example">
+      <div class="example-title">Code assistant / repo Q&A</div>
+      <div class="example-desc">Ask questions about a codebase. Embed code + docs, retrieve relevant chunks, LLM explains or generates code.</div>
+    </div>
+    <div class="example">
+      <div class="example-title">Research assistant</div>
+      <div class="example-desc">Ask questions across papers, reports, transcripts. Retrieves relevant passages, synthesizes an answer.</div>
+    </div>
+    <div class="example">
+      <div class="example-title">Conversational product advisor</div>
+      <div class="example-desc">"I need a laptop for video editing under $2000" — retrieves matching products, LLM recommends with reasoning.</div>
+    </div>
+  </div>
+</div>
+
+<!-- AGENT MEMORY -->
+<div class="category">
+  <div class="category-header" style="color: #fbbf24;">Agent Memory & Retrieval</div>
+  <div class="category-desc">Long-term context for autonomous AI agents. The agent stores facts, conversation history, and knowledge, then retrieves by meaning when it needs context for a decision.</div>
+  <div class="examples">
+    <div class="example">
+      <div class="example-title">Conversation memory</div>
+      <div class="example-desc">Agent remembers past interactions across sessions. Retrieves relevant history when the user references something from before.</div>
+    </div>
+    <div class="example">
+      <div class="example-title">Tool output storage</div>
+      <div class="example-desc">Agent runs tools (APIs, calculations, web searches), stores results for later retrieval without re-running.</div>
+    </div>
+    <div class="example">
+      <div class="example-title">Knowledge accumulation</div>
+      <div class="example-desc">Agent learns facts over time (user preferences, project context, domain rules). Retrieves relevant facts per task.</div>
+    </div>
+    <div class="example">
+      <div class="example-title">Multi-agent shared memory</div>
+      <div class="example-desc">Multiple agents share a knowledge store. One agent's findings are retrievable by others.</div>
+    </div>
+    <div class="example">
+      <div class="example-title">Workflow state persistence</div>
+      <div class="example-desc">Long-running agent workflows store intermediate state. Resume from where you left off, retrieve relevant context for next step.</div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top: 32px; font-size: 12px; color: #64748b; font-style: italic;">
+  These categories aren't mutually exclusive — many real systems combine them. An e-commerce site might have product search (Search UI) + "similar items" (Recs) + a chatbot advisor (RAG). The use case determines which retrieval pattern dominates and which fields matter most.
+</div>
+
+</div>
+</body>
+</html>

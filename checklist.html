@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checklist Analysis — Why a Checklist Can't Do This</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    background: #0b1117;
+    color: #e2e8f0;
+    line-height: 1.6;
+    padding: 40px 20px;
+  }
+  .container { max-width: 900px; margin: 0 auto; }
+  .back-link { font-size: 13px; color: #64748b; text-decoration: none; display: inline-block; margin-bottom: 24px; }
+  .back-link:hover { color: #00bfb3; }
+  h1 { font-size: 32px; font-weight: 800; color: #ffffff; margin-bottom: 8px; }
+  .subtitle { font-size: 16px; color: #94a3b8; margin-bottom: 48px; max-width: 700px; }
+  h2 { font-size: 20px; font-weight: 700; color: #ffffff; margin-bottom: 12px; margin-top: 48px; }
+  p { font-size: 14px; color: #94a3b8; line-height: 1.7; margin-bottom: 16px; }
+  p strong { color: #cbd5e1; }
+  .callout {
+    padding: 20px 24px;
+    background: #1a2332;
+    border-left: 3px solid #f59e0b;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 32px;
+  }
+  .callout-teal { border-left-color: #00bfb3; }
+  .callout-title { font-size: 14px; font-weight: 700; color: #fbbf24; margin-bottom: 8px; }
+  .callout-teal .callout-title { color: #00bfb3; }
+  .callout-body { font-size: 13px; color: #94a3b8; line-height: 1.6; }
+  .milestone-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+  }
+  .milestone-table th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    padding: 8px 12px;
+    border-bottom: 1px solid #263040;
+  }
+  .milestone-table td {
+    font-size: 13px;
+    color: #cbd5e1;
+    padding: 10px 12px;
+    border-bottom: 1px solid #1e293b;
+  }
+  .milestone-table td:first-child {
+    color: #94a3b8;
+    font-style: italic;
+    white-space: nowrap;
+  }
+  .section-card {
+    background: #151d2b;
+    border: 1px solid #1e293b;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+  }
+  .section-card h3 { font-size: 16px; font-weight: 700; color: #ffffff; margin-bottom: 12px; }
+  .section-card p { font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<a class="back-link" href="index.html">← Back to overview</a>
+
+<h1>Why a Checklist Can't Do This</h1>
+<p class="subtitle">Each "milestone" in a linear checklist hides 4-8 branching decisions underneath. And even the use case alone doesn't determine the right path.</p>
+
+<!-- HIDDEN DECISIONS -->
+<div class="callout">
+  <div class="callout-title">The hidden decision space</div>
+  <div class="callout-body">A typical milestone path like "RAG context store" looks simple: Create project → Ingest embeddings → Run kNN → Run hybrid with reranking → Connect LLM → Return grounded answer. That's 6 steps. But the actual decision space underneath:</div>
+</div>
+
+<table class="milestone-table">
+  <thead><tr><th>Milestone</th><th>Real decisions hidden inside</th></tr></thead>
+  <tbody>
+    <tr><td>"Ingest embeddings"</td><td>semantic_text vs inference endpoint vs BYO? Which model? Which modality? Where's the data? What language? Which fields? Chunk strategy? Cleanup?</td></tr>
+    <tr><td>"Run kNN"</td><td>Pure kNN vs hybrid vs semantic? Filtered? Which filter fields? ACORN?</td></tr>
+    <tr><td>"Run hybrid with reranking"</td><td>Which reranker? RRF weights? Min score? How many candidates at each stage?</td></tr>
+    <tr><td>"Connect LLM"</td><td>Which LLM? LangChain vs LlamaIndex vs direct? Context window? Streaming?</td></tr>
+    <tr><td>"Return grounded answer"</td><td>Citations? Source linking? Confidence scores? Fallback behavior?</td></tr>
+  </tbody>
+</table>
+
+<!-- USE CASE DOESN'T DETERMINE PATH -->
+<div class="callout callout-teal">
+  <div class="callout-title">It goes deeper: even the use case doesn't determine the path</div>
+  <div class="callout-body">A use-case picker gives you "Catalogue/product search" and routes you to a single project type. But the same use case — ecommerce search — could be ES3 (keyword primary, facets, continuous catalog updates) or VectorDB (semantic discovery primary, scale-to-zero between traffic spikes, multi-tenant marketplace with _slice). The project type depends on write pattern, tenancy needs, and whether vectors are primary or supplemental. You can't know from one card click. A conversation asks 2-3 follow-up questions and resolves it correctly. A static picker has to guess — and will be wrong for a large portion of users.</div>
+</div>
+
+<!-- DETAILED ARGUMENTS -->
+<h2>It assumes a fixed path</h2>
+<p>A checklist is linear — step 1, 2, 3, done. But developers arrive with completely different starting points. Some have data already in ES. Some have a JSON file. Some have a Postgres database. Some don't even have data yet.</p>
+<p>Once it's ingested, the same thing applies. It's not just "run a query" — it's choosing between keyword search, semantic search, hybrid, RAG, vector database patterns, each with different mapping decisions, different inference setups, different query structures. They may drop vectors, they may need to generate them, they may use one model, they may use another. They could be here for searching logs or creating an AI chatbot or keyword search — all very different.</p>
+<p>Then after that it's not just "build a frontend" — some users need Search UI, some need an API endpoint, some are feeding results into an AI pipeline that has no frontend at all. Every step fans out into branches that depend on what the user is actually building.</p>
+<p>A checklist either flattens all of that into meaningless generics ("Step 3: Search your data") or tries to branch, at which point it's not a checklist anymore — it's a decision tree you're building in UI components instead of in a conversation where it belongs.</p>
+
+<h2>To work for everyone, it has to be so generic it says nothing</h2>
+<p>A checklist that spans all use cases ends up with items like "Ingest your data" and "Run a query" — things the developer already knows they need to do. You're not teaching them anything, you're just restating their own intent back to them as checkboxes.</p>
+<p>And the "completion" check is meaningless — did you ingest data? You already know. You were there. You don't need a green checkmark in a sidebar to confirm what you just did. Kibana already has real signals for this — documents show up in Discover, indices appear in Management, search returns results. Those are the actual confirmation moments, and they're already in the product. A checklist widget is a worse version of signals that already exist.</p>
+<p>And "run a query" isn't even right — what if it's a retrieval (RAG)? Does Elastic even know when a query is run externally via client library? The checklist can only observe what happens inside Kibana UI, which misses the majority of real usage.</p>
+
+<h2>Checklists are finicky</h2>
+<p>Buggy checking. When do they check? How do they make calls? How do they update? What are the milestones? A "working" checklist needs to observe state across the entire product — indices, documents, queries, pipelines, frontends. That's not a UI widget, it's a state machine that has to observe every possible path through the product.</p>
+<p>At the "extremely complex" end: you build a real-time progress tracker that integrates with telemetry, index APIs, and user session state. At the "so vague it's not valuable" end: you build a static list that ignores what's actually happening. There is no good middle ground.</p>
+
+<h2>Users probably leave Kibana anyway</h2>
+<p>Most serious developers build in their IDE. They use Elasticsearch client libraries, write scripts, build applications. A checklist lives in Kibana, but the actual work happens in Cursor, VS Code, or a terminal. By the time a user needs guidance most, they're not looking at the screen where the checklist lives.</p>
+
+<h2>It's a distraction from AI-first onboarding</h2>
+<p>The AI agent already tracks where the user is in the flow — it knows what's been done, what's next, and adapts in real time. Adding a checklist alongside it creates two systems trying to track the same thing. Do they stay in sync? What happens when the AI skips a step because the user's data was already ingested, but the checklist still shows it unchecked?</p>
+<p>Now you're building reconciliation logic between two onboarding systems instead of making one good one. And the cost isn't just engineering — it's design and discussion time too. Every checklist item becomes a debate: what's the right label, what counts as "done," does it apply to all solution types, how does it interact with the AI flow. That's weeks of cross-functional alignment on a component that's either redundant (if the AI works) or a crutch (if it doesn't).</p>
+
+<h2>We tried this before</h2>
+<p>In 8.15, a guided onboarding was built where one component was meant to go across all three solutions. It went poorly. Force-fitting, poor UX, failure. That had checklists too. This is a less in-your-face version of the same pattern — trying to create a single linear path through a fundamentally non-linear space. The underlying problem is the same: onboarding is a many-to-many problem, and linear components can't represent it.</p>
+
+</div>
+</body>
+</html>

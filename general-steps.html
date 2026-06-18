@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>General Steps — Onboarding Decision Tree</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    background: #0b1117;
+    color: #e2e8f0;
+    line-height: 1.6;
+    padding: 40px 20px;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .back-link { font-size: 13px; color: #64748b; text-decoration: none; display: inline-block; margin-bottom: 24px; }
+  .back-link:hover { color: #00bfb3; }
+  h1 { font-size: 32px; font-weight: 800; color: #ffffff; margin-bottom: 8px; }
+  .subtitle { font-size: 16px; color: #94a3b8; margin-bottom: 48px; max-width: 100%; }
+  .step { position: relative; margin-bottom: 0; padding-left: 48px; }
+  .step::before {
+    content: '';
+    position: absolute;
+    left: 18px;
+    top: 44px;
+    bottom: -1px;
+    width: 2px;
+    background: linear-gradient(to bottom, #334155, #1e293b);
+  }
+  .step:last-child::before { display: none; }
+  .step-number {
+    position: absolute;
+    left: 0;
+    top: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #1e293b;
+    border: 2px solid #334155;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: #00bfb3;
+    z-index: 2;
+  }
+  .step-card {
+    background: #151d2b;
+    border: 1px solid #1e293b;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+  }
+  .step-card:hover { border-color: #334155; }
+  .step-title { font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 4px; }
+  .step-context { font-size: 13px; color: #64748b; margin-bottom: 16px; }
+  .fork { display: grid; gap: 12px; margin-top: 12px; }
+  .fork-2 { grid-template-columns: 1fr 1fr; }
+  .fork-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .fork-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+  .fork-5 { grid-template-columns: 1fr 1fr 1fr 1fr 1fr; }
+  .option {
+    background: #1a2332;
+    border: 1px solid #263040;
+    border-radius: 8px;
+    padding: 16px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .option:hover { border-color: #00bfb3; background: #1a2836; }
+  .option-title { font-size: 14px; font-weight: 700; color: #f1f5f9; margin-bottom: 6px; }
+  .option-desc { font-size: 12px; color: #94a3b8; line-height: 1.5; }
+  .option-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-top: 8px;
+  }
+  .tag-es3 { background: #1e3a5f; color: #60a5fa; }
+  .tag-vdb { background: #3b1f4a; color: #c084fc; }
+  .tag-both { background: #1a3330; color: #34d399; }
+  .tag-loop { background: #3b2f1a; color: #fbbf24; }
+  .details-list { margin-top: 12px; padding: 0; list-style: none; }
+  .details-list li {
+    font-size: 13px;
+    color: #cbd5e1;
+    padding: 4px 0;
+    padding-left: 16px;
+    position: relative;
+  }
+  .details-list li::before { content: "→"; position: absolute; left: 0; color: #00bfb3; }
+  .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+  .comparison-col {
+    background: #1a2332;
+    border: 1px solid #263040;
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .comparison-col h4 { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+  .col-es3 h4 { color: #60a5fa; }
+  .col-vdb h4 { color: #c084fc; }
+  .col-human h4 { color: #34d399; }
+  .col-machine h4 { color: #fbbf24; }
+  .comparison-col ul { list-style: none; padding: 0; }
+  .comparison-col li { font-size: 12px; color: #94a3b8; padding: 3px 0; }
+  @media (max-width: 768px) {
+    .fork-2, .fork-3, .fork-4, .fork-5 { grid-template-columns: 1fr; }
+    .comparison { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<a class="back-link" href="index.html">← Back to overview</a>
+
+<h1>Steps to Building Search</h1>
+<p class="subtitle">These are conceptual steps, not a rigid sequence. In practice there's back-and-forth — users revisit decisions, skip ahead, and iterate. The ordering here is roughly chronological for ease of understanding, but a facilitated experience (AI or human) doesn't have to follow this order. Some steps are conditional (e.g., embedding strategy only applies if vectors are involved). Users with more experience will skip steps or make decisions instantly; newer users will loop back as they learn what works.</p>
+
+<!-- STEP 1 -->
+<div class="step" data-step="1">
+  <div class="step-number">1</div>
+  <div class="step-card">
+    <div class="step-title">Primary retrieval pattern</div>
+    <div class="step-context">The user is answering: "how do people find things in my app?" This shapes everything downstream — query types, mapping, embedding decisions, and what "good results" means.</div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 16px;">
+      <div style="background: #1a2836; border-radius: 8px; padding: 14px;">
+        <div style="font-size: 13px; font-weight: 700; color: #60a5fa; margin-bottom: 8px;">Text / keyword</div>
+        <div style="font-size: 12px; color: #94a3b8; line-height: 1.6;">
+          Users type words, results ranked by text relevance (BM25). Exact matches, stemming, synonyms. Filters and facets narrow results. Autocomplete suggests as you type.
+        </div>
+      </div>
+      <div style="background: #1a2836; border-radius: 8px; padding: 14px;">
+        <div style="font-size: 13px; font-weight: 700; color: #c084fc; margin-bottom: 8px;">Vector / semantic</div>
+        <div style="font-size: 12px; color: #94a3b8; line-height: 1.6;">
+          Results ranked by meaning, not exact words. Similarity matching ("find things like this"). Works for text, images, audio — anything that can be embedded. Powers semantic search, RAG, recommendations, deduplication, matching, classification, anomaly detection.
+        </div>
+      </div>
+      <div style="background: #1a2836; border-radius: 8px; padding: 14px;">
+        <div style="font-size: 13px; font-weight: 700; color: #fbbf24; margin-bottom: 8px;">Hybrid</div>
+        <div style="font-size: 12px; color: #94a3b8; line-height: 1.6;">
+          Combines both. The question is which one leads: text-led hybrid uses vectors to catch what keywords miss. Vector-led hybrid uses keywords to fill in exact-match gaps. The balance matters for tuning.
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 14px; font-size: 12px; color: #94a3b8; line-height: 1.7;">
+      <strong style="color: #cbd5e1;">Why this matters early:</strong> The retrieval pattern determines which fields need embeddings (Step 2), what query types you'll write (Step 5), and how you tune relevance (Step 7).
+    </div>
+
+    <div style="margin-top: 16px; background: #1a2836; border: 1px solid #334155; border-radius: 8px; padding: 16px;">
+      <div style="font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 8px;">How this maps to Elastic's project types</div>
+      <div style="font-size: 12px; color: #94a3b8; line-height: 1.7;">
+        Elastic offers two Serverless project types: <strong style="color: #60a5fa;">ES3</strong> (text-first) and <strong style="color: #c084fc;">VectorDB</strong> (vector-first). There's overlap — the right choice depends on more than just retrieval pattern.
+      </div>
+      <a href="es3-vs-vectordb.html" style="display: inline-block; margin-top: 10px; font-size: 12px; color: #00bfb3; text-decoration: none;">Full comparison: signals, pricing, defaults, and the gray zone →</a>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 2 -->
+<div class="step" data-step="2">
+  <div class="step-number">2</div>
+  <div class="step-card">
+    <div class="step-title">Embedding strategy</div>
+    <div class="step-context">Conditional — only applies if vectors are involved. Keyword-only users skip this step.</div>
+    <div style="background: #1a2836; border-left: 3px solid #fbbf24; border-radius: 0 6px 6px 0; padding: 8px 12px; margin-bottom: 12px; font-size: 12px; color: #94a3b8;">
+      <strong style="color: #fbbf24;">Ingest model = query model:</strong> The model you embed with at ingest time must be the same model used at query time. If you change models later, you have to re-embed all your data. This also applies to BYO vectors — whatever generates embeddings for your documents must also generate the query embedding.
+    </div>
+    <div class="fork fork-4">
+      <div class="option">
+        <div class="option-title">semantic_text</div>
+        <div class="option-desc">Zero-config. Mark the field and Elasticsearch picks a model, chunks long text, generates embeddings, stores everything. You send plain text.</div>
+        <ul class="details-list">
+          <li>Text only</li>
+          <li>Least effort</li>
+          <li>Good for starting fast</li>
+          <li>Chunking configurable (size, overlap) but not custom logic</li>
+        </ul>
+        <span class="option-tag tag-both">Fastest start</span>
+      </div>
+      <div class="option">
+        <div class="option-title">semantic</div>
+        <div class="option-desc">Like semantic_text but multi-model. Designed for use with Jina v5 and similar models that produce multiple embedding types from one input.</div>
+        <ul class="details-list">
+          <li>Multiple embedding types from one input</li>
+          <li>Zero-config from the user's side</li>
+        </ul>
+        <span class="option-tag tag-vdb">Multi-model</span>
+      </div>
+      <div class="option">
+        <div class="option-title">Inference endpoint + dense_vector</div>
+        <div class="option-desc">Manual setup: you configure a model connection (inference endpoint) and a vector storage field (dense_vector) separately. More work, full control over model, dimensions, and modality.</div>
+        <ul class="details-list">
+          <li>Jina, OpenAI, Cohere, ELSER, Voyage, Bedrock, Vertex</li>
+          <li>Text, image, video, multimodal</li>
+          <li>Production-grade</li>
+          <li>Any modality</li>
+        </ul>
+        <span class="option-tag tag-vdb">Full control</span>
+      </div>
+      <div class="option">
+        <div class="option-title">BYO vectors</div>
+        <div class="option-desc">Generate embeddings externally and send float[] directly. Any model, any dimension, any modality. This is also the path for self-hosted models (Hugging Face, custom fine-tuned, etc.).</div>
+        <ul class="details-list">
+          <li>For existing pipelines</li>
+          <li>You own the embedding step</li>
+          <li>Just need storage + retrieval</li>
+        </ul>
+        <span class="option-tag tag-vdb">External pipeline</span>
+      </div>
+    </div>
+    <div style="margin-top: 12px; font-size: 12px; color: #64748b; border-left: 3px solid #334155; padding-left: 10px;">
+      <strong style="color: #94a3b8;">Applies to Inference endpoint + BYO only:</strong> Quantization (compress vectors — tradeoff: recall vs cost) and chunking (how to split long documents before embedding). With semantic_text/semantic, these are handled automatically.
+    </div>
+  </div>
+</div>
+
+<!-- STEP 3 -->
+<div class="step" data-step="3">
+  <div class="step-number">3</div>
+  <div class="step-card">
+    <div class="step-title">Mapping</div>
+    <div class="step-context">Conditional — can be skipped initially. If you're exploring, load data with no mapping and Elasticsearch auto-detects field types. Come back to define intentional mapping once you know what you're working with.</div>
+    <div class="comparison" style="margin-top: 12px;">
+      <div class="comparison-col" style="border-color: #fbbf24;">
+        <h4 style="color: #fbbf24;">Mapping decisions</h4>
+        <ul>
+          <li>Which fields get semantic_text?</li>
+          <li>Which are keyword (facets)?</li>
+          <li>Which need dense_vector?</li>
+          <li>Which are just metadata (long, float, boolean)?</li>
+          <li>Nested vs. flattened for object arrays?</li>
+          <li>Multi-fields (same field as text + keyword)?</li>
+          <li>Analyzer choice (language, synonyms, custom)?</li>
+          <li>Dynamic mapping behavior (strict, runtime, allow new)?</li>
+          <li>Strip unnecessary fields?</li>
+          <li>Data cleanup needed?</li>
+        </ul>
+      </div>
+      <div class="comparison-col" style="border-color: #64748b;">
+        <h4 style="color: #94a3b8;">Reindex (later)</h4>
+        <ul>
+          <li>Create index with intentional mapping</li>
+          <li>Reload data from source</li>
+          <li>Generate embeddings (if applicable)</li>
+          <li>Alias swap (zero downtime)</li>
+          <li>Add new mappings when scaling to full dataset</li>
+          <li>Repeat as needed — not a one-time thing</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top: 12px; padding: 10px 14px; background: #1a2836; border-radius: 6px; font-size: 12px; color: #94a3b8;">
+      Most users reindex several times as they refine — add vectors, change field types, clean up data. Aliases make each reindex zero-downtime.
+    </div>
+  </div>
+</div>
+
+<!-- STEP 4 -->
+<div class="step" data-step="4">
+  <div class="step-number">4</div>
+  <div class="step-card">
+    <div class="step-title">Get data in</div>
+    <div class="step-context">You write a script that pulls data from its source and bulk-loads it into Elasticsearch. Pick a language, connect to the source, run the script.</div>
+
+    <div style="font-size: 12px; font-weight: 600; color: #cbd5e1; margin-top: 14px; margin-bottom: 4px;">Choose a language for your script</div>
+    <div style="font-size: 12px; color: #94a3b8; margin-bottom: 10px;">Elasticsearch is an API. You need a language to write a script that connects to your cluster, reads from your data source, and bulk-loads documents. This determines which client library you use and what the generated code looks like.</div>
+    <div class="fork fork-5">
+      <div class="option"><div class="option-title">Python</div></div>
+      <div class="option"><div class="option-title">JavaScript</div></div>
+      <div class="option"><div class="option-title">Java</div></div>
+      <div class="option"><div class="option-title">Go</div></div>
+      <div class="option"><div class="option-title">+ others</div><div class="option-desc">Ruby, PHP, Rust, .NET, cURL</div></div>
+    </div>
+
+    <div style="font-size: 12px; font-weight: 600; color: #cbd5e1; margin-top: 20px; margin-bottom: 4px;">Data source</div>
+    <div class="fork fork-4">
+      <div class="option">
+        <div class="option-title">File</div>
+        <div class="option-desc">JSON, CSV, NDJSON, Parquet, XML, Avro</div>
+        <div style="font-size: 11px; color: #64748b; margin-top: 6px;">No auth — just read, parse, and index</div>
+      </div>
+      <div class="option">
+        <div class="option-title">Database</div>
+        <div class="option-desc">Postgres, MySQL, MongoDB, DynamoDB, Redis, Cassandra, SQLite</div>
+        <div style="font-size: 11px; color: #64748b; margin-top: 6px;">Connection string + query</div>
+      </div>
+      <div class="option">
+        <div class="option-title">Cloud storage</div>
+        <div class="option-desc">S3, GCS, Azure Blob</div>
+        <div style="font-size: 11px; color: #64748b; margin-top: 6px;">Auth + client library + list/download</div>
+      </div>
+      <div class="option">
+        <div class="option-title">Data warehouse</div>
+        <div class="option-desc">Snowflake, BigQuery, Redshift, Databricks</div>
+        <div style="font-size: 11px; color: #64748b; margin-top: 6px;">Auth + client library + query</div>
+      </div>
+    </div>
+    <div class="fork fork-4" style="margin-top: 12px;">
+      <div class="option">
+        <div class="option-title">Another search engine</div>
+        <div class="option-desc">Solr, OpenSearch, Pinecone, Weaviate, Milvus</div>
+        <div style="font-size: 11px; color: #64748b; margin-top: 6px;">Export/API + cleanup (strip legacy fields, flatten nested)</div>
+      </div>
+      <div class="option">
+        <div class="option-title">SaaS / Connectors</div>
+        <div class="option-desc">Confluence, SharePoint, Google Drive, Salesforce, Notion, Slack</div>
+        <div style="font-size: 11px; color: #64748b; margin-top: 6px;">Connector handles auth + sync</div>
+        <div style="font-size: 10px; color: #475569; margin-top: 4px; font-style: italic;">Not in onboarding UI currently</div>
+      </div>
+      <div class="option">
+        <div class="option-title">Streaming / API</div>
+        <div class="option-desc">Kafka, Kinesis, webhooks, REST APIs, crawled web content</div>
+        <div style="font-size: 11px; color: #64748b; margin-top: 6px;">Consumer/listener + continuous bulk indexing</div>
+      </div>
+      <div class="option">
+        <div class="option-title">Already in Elasticsearch</div>
+        <div class="option-desc">Same project → reindex<br>Different cluster → remote reindex<br>Different account → export + re-ingest</div>
+        <div style="font-size: 11px; color: #64748b; margin-top: 6px;">Reindex API or export/import</div>
+      </div>
+    </div>
+    <div style="margin-top: 12px; font-size: 12px; color: #64748b;">+ no data yet → use a sample dataset to get started</div>
+
+    <div style="margin-top: 14px; padding: 10px 14px; background: #1a2836; border-radius: 6px; font-size: 12px; color: #94a3b8;">
+      <strong style="color: #cbd5e1;">Alternative order:</strong> Some users flip Steps 2–3 and 4 — they load data first (no mapping) to see what they're working with, then come back to decide embedding strategy and mapping after. This exploratory approach works well when the schema is unknown or messy.
+    </div>
+  </div>
+</div>
+
+<!-- STEP 5 -->
+<div class="step" data-step="5">
+  <div class="step-number">5</div>
+  <div class="step-card">
+    <div class="step-title">Learn to query & test results</div>
+    <div class="step-context">Elasticsearch uses its own query language (Query DSL) — a JSON-based format, not SQL or GraphQL. Queries must be tailored to your actual mapping (right field names, right query type per field). This step is about learning the syntax, choosing query types, and confirming your data is searchable.</div>
+
+    <div style="background: #1a2836; border-left: 3px solid #64748b; border-radius: 0 6px 6px 0; padding: 8px 12px; margin-bottom: 14px; font-size: 12px; color: #94a3b8;">
+      <strong style="color: #cbd5e1;">Learning is part of the work here.</strong> Query DSL is proprietary to Elasticsearch — users need to find or be given queries specific to their fields and retrieval pattern. A generic tutorial won't be enough because the queries depend on what was actually mapped and indexed.
+    </div>
+    <div style="background: #1a2836; border-left: 3px solid #64748b; border-radius: 0 6px 6px 0; padding: 8px 12px; margin-bottom: 14px; font-size: 12px; color: #94a3b8;">
+      <strong style="color: #cbd5e1;">No UI yet.</strong> You're testing via Dev Tools (Kibana console), cURL, or your client library — hitting the API directly. The frontend comes later (Step 6).
+    </div>
+
+    <div style="font-size: 12px; font-weight: 600; color: #cbd5e1; margin-top: 16px; margin-bottom: 8px;">Available query types</div>
+    <div class="comparison">
+      <div class="comparison-col" style="border-color: #60a5fa;">
+        <h4 style="color: #60a5fa;">Text / keyword</h4>
+        <ul>
+          <li>Full-text (BM25) — ranked by word relevance</li>
+          <li>Filtered keyword — exact match on categories, IDs, tags</li>
+          <li>Aggregations — counts, averages, histograms over results</li>
+        </ul>
+      </div>
+      <div class="comparison-col" style="border-color: #c084fc;">
+        <h4 style="color: #c084fc;">Vector / semantic</h4>
+        <ul>
+          <li>kNN — find nearest vectors by distance</li>
+          <li>Semantic query — send plain text, ES embeds and searches</li>
+          <li>Filtered kNN (ACORN) — vector search within a subset</li>
+          <li>Reranking — re-score initial results with a second model</li>
+        </ul>
+      </div>
+      <div class="comparison-col" style="border-color: #fbbf24;">
+        <h4 style="color: #fbbf24;">Hybrid</h4>
+        <ul>
+          <li>RRF — fuse keyword + vector results by rank</li>
+          <li>Weighted fusion — custom balance between signals</li>
+          <li>Text-led or vector-led — which one dominates</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="font-size: 12px; font-weight: 600; color: #cbd5e1; margin-top: 20px; margin-bottom: 8px;">How the query reaches your vectors</div>
+    <ul class="details-list">
+      <li><strong>Built-in inference</strong> (semantic_text, semantic) — you send a plain text query like "red running shoes." Elasticsearch embeds it using the same model from ingest, then searches. You never touch vectors directly.</li>
+      <li><strong>BYO vectors</strong> — you embed the query yourself in your code (same model you used at ingest), then send the resulting float array to a kNN query.</li>
+      <li><strong>Reranker</strong> (optional) — after initial results come back, a second model re-scores them for better relevance. Added on top of either approach above.</li>
+    </ul>
+
+    <div style="font-size: 12px; font-weight: 600; color: #cbd5e1; margin-top: 20px; margin-bottom: 8px;">Testing checklist</div>
+    <ul class="details-list">
+      <li>Run a sample query — do expected documents come back?</li>
+      <li>Test edge cases — empty queries, very long text, special characters</li>
+      <li>If using vectors — does similarity ranking feel right? Are "close" things actually close?</li>
+      <li>Unexpected results? Note what's off — tune later (don't stop here)</li>
+    </ul>
+
+    <div style="background: #1a2836; border-left: 3px solid #64748b; border-radius: 0 6px 6px 0; padding: 8px 12px; margin-top: 14px; font-size: 12px; color: #94a3b8;">
+      <strong style="color: #cbd5e1;">No UI yet.</strong> You're testing via Dev Tools (Kibana console), cURL, or your client library — hitting the API directly. The frontend comes later (Step 6).
+    </div>
+  </div>
+</div>
+
+<!-- INCREMENTAL INGEST CALLOUT -->
+<div style="margin: 8px 0 8px 48px; padding: 14px 18px; background: #0b1117; border: 1px dashed #334155; border-radius: 8px; position: relative;">
+  <div style="position: absolute; left: -48px; top: 50%; transform: translateY(-50%); width: 36px; text-align: center; font-size: 10px; color: #475569; line-height: 1.2;">3–8</div>
+  <div style="font-size: 12px; color: #94a3b8; line-height: 1.6;">
+    <strong style="color: #cbd5e1;">Full dataset load is a separate decision.</strong> Some users load everything upfront. Others load a subset first, validate search (or even tune relevance), then load the rest once they're confident the setup works. The "load the rest" moment can happen after Step 4, after Step 7, or anywhere in between.
+  </div>
+</div>
+
+<!-- STEP 6 -->
+<div class="step" data-step="6">
+  <div class="step-number">6</div>
+  <div class="step-card">
+    <div class="step-title">What consumes the results?</div>
+    <div class="step-context">You have to choose one of these paths and build it — Elasticsearch returns JSON, everything after that is your responsibility.</div>
+    <div class="comparison">
+      <div class="comparison-col col-human">
+        <h4>Human (search bar) → Build a frontend</h4>
+        <ul>
+          <li>Search UI (@elastic/search-ui)</li>
+          <li>Next.js custom</li>
+          <li>Autocomplete widget</li>
+          <li>Faceted catalog page</li>
+          <li>API + own framework</li>
+        </ul>
+        <ul style="margin-top: 8px; border-top: 1px solid #263040; padding-top: 6px; color: #64748b;">
+          <li>Framework? SSR vs client?</li>
+          <li>Port / hosting?</li>
+          <li>Connector vs direct ES calls?</li>
+        </ul>
+      </div>
+      <div class="comparison-col col-machine">
+        <h4>Machine (AI pipeline) → Build a pipeline</h4>
+        <ul>
+          <li>RAG (feed context to LLM)</li>
+          <li>LangChain vectorstore</li>
+          <li>LlamaIndex retriever</li>
+          <li>Direct ES client calls</li>
+          <li>Agent Builder</li>
+          <li>API endpoint (no UI)</li>
+        </ul>
+        <ul style="margin-top: 8px; border-top: 1px solid #263040; padding-top: 6px; color: #64748b;">
+          <li>Which LLM? Context window?</li>
+          <li>Streaming vs batch?</li>
+          <li>Citation / source linking?</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 7 -->
+<div class="step" data-step="7">
+  <div class="step-number">7</div>
+  <div class="step-card">
+    <div class="step-title">Relevance tuning</div>
+    <div class="step-context">Iterative loop — not a one-time step</div>
+    <span class="option-tag tag-loop">LOOP: tune → eval → tune → eval</span>
+    <div class="fork fork-3" style="margin-top: 16px;">
+      <div class="option">
+        <div class="option-title">Diagnose</div>
+        <ul class="details-list">
+          <li>Semantic matched too broadly?</li>
+          <li>Keyword missed synonyms?</li>
+          <li>Wrong field boosted?</li>
+          <li>Run _rank_eval (P@K, MRR, DCG)</li>
+        </ul>
+      </div>
+      <div class="option">
+        <div class="option-title">Tune</div>
+        <ul class="details-list">
+          <li>Boosting (weight fields)</li>
+          <li>Reranking (Cohere, cross-encoder)</li>
+          <li>RRF weights</li>
+          <li>Min score threshold</li>
+          <li>Query rules (pin/promote)</li>
+          <li>Synonyms</li>
+        </ul>
+      </div>
+      <div class="option">
+        <div class="option-title">Measure again</div>
+        <ul class="details-list">
+          <li>Re-run _rank_eval</li>
+          <li>Compare before/after</li>
+          <li>Repeat until satisfied</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 8 -->
+<div class="step" data-step="8">
+  <div class="step-number">8</div>
+  <div class="step-card">
+    <div class="step-title">Reindex & data optimization</div>
+    <div class="step-context">Most users reindex several times as they refine — add vectors, change field types, clean up data. Aliases make each reindex zero-downtime.</div>
+    <div class="fork fork-2">
+      <div class="option">
+        <div class="option-title">Triggers</div>
+        <ul class="details-list">
+          <li>Mapping was wrong (field types need change)</li>
+          <li>Adding semantic_text to keyword-only fields</li>
+          <li>Switching from semantic_text to dense_vector</li>
+          <li>Data cleanup discovered post-ingest</li>
+          <li>Switching quantization strategy</li>
+          <li>Adding _slice for multi-tenancy</li>
+          <li>Adding new fields from additional sources</li>
+        </ul>
+      </div>
+      <div class="option">
+        <div class="option-title">Decisions</div>
+        <ul class="details-list">
+          <li>Zero-downtime (alias swap v1 → v2) vs delete</li>
+          <li>Re-run inference on all data? (cost + time)</li>
+          <li>Storage impact (show before/after)</li>
+          <li>Strip Solr artifacts, flatten nested</li>
+          <li>"4,200 fields → which 20 matter?"</li>
+          <li>10KB/doc → 2KB/doc = 5x savings</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 9 -->
+<div class="step" data-step="9">
+  <div class="step-number">9</div>
+  <div class="step-card">
+    <div class="step-title">Production scale & cost</div>
+    <div class="step-context">Optimizations for running at scale</div>
+    <div class="fork fork-4">
+      <div class="option">
+        <div class="option-title">Multi-tenancy</div>
+        <div class="option-desc">Partition vector graphs per tenant (_slice). Thousands of tenants, one index.</div>
+      </div>
+      <div class="option">
+        <div class="option-title">Quantization</div>
+        <div class="option-desc">Compress vectors to reduce memory and cost. Tradeoff: recall vs memory vs cost.</div>
+      </div>
+      <div class="option">
+        <div class="option-title">Filtered search (ACORN)</div>
+        <div class="option-desc">Filtering inside HNSW traversal. Critical for "similar IN this category."</div>
+      </div>
+      <div class="option">
+        <div class="option-title">Cost optimization</div>
+        <div class="option-desc">Unpin idle data, adjust compute scaling, choose the right tier for hot/warm/cold data.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>

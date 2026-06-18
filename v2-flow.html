@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>v2 Flow — Ingest-First Playbook</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    background: #0b1117;
+    color: #e2e8f0;
+    line-height: 1.6;
+    padding: 40px 20px;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .back-link { font-size: 13px; color: #64748b; text-decoration: none; display: inline-block; margin-bottom: 24px; }
+  .back-link:hover { color: #00bfb3; }
+  h1 { font-size: 32px; font-weight: 800; color: #ffffff; margin-bottom: 8px; }
+  .subtitle { font-size: 16px; color: #94a3b8; margin-bottom: 16px; max-width: 700px; }
+  .version-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: #1a3330;
+    color: #34d399;
+    margin-bottom: 32px;
+  }
+  .section-box {
+    background: #151d2b;
+    border: 1px solid #1e293b;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 32px;
+  }
+  .section-box h3 { font-size: 16px; font-weight: 700; color: #ffffff; margin-bottom: 16px; }
+  .playbook-step {
+    display: grid;
+    grid-template-columns: 24px 1fr 1fr;
+    gap: 8px;
+    align-items: start;
+    margin-bottom: 6px;
+  }
+  .playbook-num { font-size: 11px; font-weight: 700; color: #00bfb3; text-align: center; padding-top: 8px; }
+  .playbook-action {
+    background: #151d2b;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 11px;
+    color: #94a3b8;
+  }
+  .playbook-action.primary {
+    border: 1px solid #00bfb3;
+    color: #f1f5f9;
+    font-weight: 600;
+  }
+  .playbook-ref { font-size: 10px; color: #64748b; padding-top: 8px; }
+  .why-box {
+    padding-top: 16px;
+    border-top: 1px solid #263040;
+    margin-top: 16px;
+  }
+  .why-label { font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 8px; }
+  .why-text { font-size: 12px; color: #94a3b8; line-height: 1.6; margin-bottom: 8px; }
+  .why-text strong { color: #cbd5e1; }
+  .three-col { display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 16px; align-items: start; }
+  .col-box {
+    background: #1a2332;
+    border: 1px solid #263040;
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .col-box.highlighted { border: 2px solid #00bfb3; }
+  .col-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+  .col-label-teal { color: #00bfb3; }
+  .col-label-yellow { color: #fbbf24; }
+  .ref-item { margin-bottom: 12px; }
+  .ref-item-name { font-size: 13px; font-weight: 600; color: #f1f5f9; }
+  .ref-item-desc { font-size: 11px; color: #64748b; }
+  .live-item { margin-bottom: 12px; }
+  .live-item-name { font-size: 13px; font-weight: 600; color: #f1f5f9; }
+  .live-item-desc { font-size: 11px; color: #64748b; }
+  .ingest-diagram {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    gap: 8px;
+    align-items: start;
+    margin-top: 16px;
+  }
+  .ingest-box {
+    background: #1a2332;
+    border: 1px solid #263040;
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .ingest-box h4 { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .ingest-box p { font-size: 11px; color: #94a3b8; }
+  .ingest-box ul { list-style: none; padding: 0; margin-top: 6px; }
+  .ingest-box li { font-size: 11px; color: #cbd5e1; padding: 2px 0; padding-left: 12px; position: relative; }
+  .ingest-box li::before { content: "→"; position: absolute; left: 0; color: #00bfb3; font-size: 10px; }
+  .arrow { color: #475569; font-size: 18px; padding-top: 30px; }
+  @media (max-width: 768px) {
+    .three-col { grid-template-columns: 1fr; }
+    .ingest-diagram { grid-template-columns: 1fr; }
+    .arrow { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<a class="back-link" href="index.html">← Back to overview</a>
+
+<h1>Skill v2: Ingest-First Flow</h1>
+<p class="subtitle">The current 7-step playbook. Gets data in immediately with one question, asks intent after seeing the actual fields.</p>
+<span class="version-badge">Current</span>
+
+<!-- CONVERSATION PLAYBOOK -->
+<div class="section-box">
+  <h3>Conversation Playbook</h3>
+  <p style="font-size: 13px; color: #94a3b8; margin-bottom: 16px;">The playbook defines a conversation flow — <strong style="color: #fff;">ingest-first</strong> by design. Get data in with minimal questions, then ask about intent once the actual data shape is visible. Recommendations are better when informed by real fields.</p>
+
+  <div style="font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 8px;">ORDER & LOGIC</div>
+
+  <div class="playbook-step">
+    <div class="playbook-num">1</div>
+    <div class="playbook-action">"Where's your data?" + language</div>
+    <div class="playbook-ref">→ code-generation.md</div>
+  </div>
+  <div class="playbook-step">
+    <div class="playbook-num">2</div>
+    <div class="playbook-action primary">Ingest data (basic mapping)</div>
+    <div class="playbook-ref">→ code-generation.md, mcp-setup.md</div>
+  </div>
+  <div class="playbook-step">
+    <div class="playbook-num">3</div>
+    <div class="playbook-action">"Who searches — people or code?" + intent</div>
+    <div class="playbook-ref">→ use-case-library.md</div>
+  </div>
+  <div class="playbook-step">
+    <div class="playbook-num">4</div>
+    <div class="playbook-action">Mapping + embedding strategy → reindex</div>
+    <div class="playbook-ref">→ vector-hybrid-search.md, keyword-search.md</div>
+  </div>
+  <div class="playbook-step">
+    <div class="playbook-num">5</div>
+    <div class="playbook-action primary">Prove search works (show results)</div>
+    <div class="playbook-ref">→ vector-hybrid-search.md</div>
+  </div>
+  <div class="playbook-step">
+    <div class="playbook-num">6</div>
+    <div class="playbook-action">Build frontend or pipeline</div>
+    <div class="playbook-ref">→ search-ui.md, rag-chatbot.md, catalog-ecommerce.md</div>
+  </div>
+  <div class="playbook-step">
+    <div class="playbook-num">7</div>
+    <div class="playbook-action">Iterate: tune, reindex, scale</div>
+    <div class="playbook-ref">→ search-eval.md, vector-hybrid-search.md</div>
+  </div>
+
+  <div class="why-box">
+    <div class="why-label">WHY THIS ORDER</div>
+    <div class="why-text"><strong>Ingest is the first action.</strong> The only question before it is "where's your data?" — the minimum needed to connect. Intent questions ("what are you building?", "who searches?") come after data is in, because the agent can see the actual fields and make informed recommendations instead of asking abstract architecture questions.</div>
+    <div class="why-text"><strong>One question at a time.</strong> Each answer narrows the path. The agent skips steps that don't apply. A keyword-only user never sees embedding questions. A BYO-vector user never picks a model. The order is relative — steps can compress, expand, or reorder based on what the user already has.</div>
+  </div>
+</div>
+
+<!-- TWO-PASS INGEST -->
+<div class="section-box">
+  <h3>Two-Pass Ingest (Step 2 → Step 4)</h3>
+  <p style="font-size: 13px; color: #94a3b8; margin-bottom: 16px;">A proper mapping can't be recommended without seeing the data, and the data can't be seen without loading it first. The user experiences this as "data went in, then search got better when configured properly."</p>
+
+  <div class="ingest-diagram">
+    <div class="ingest-box" style="border-color: #00bfb3;">
+      <h4 style="color: #00bfb3;">Pass 1: Quick ingest</h4>
+      <p>Auto-mapped. Get data visible fast.</p>
+      <ul>
+        <li>Bulk load from source</li>
+        <li>Auto-detected types</li>
+        <li>No manual mapping yet</li>
+        <li>"10 products indexed"</li>
+      </ul>
+    </div>
+    <div class="arrow">→</div>
+    <div class="ingest-box" style="border-color: #fbbf24;">
+      <h4 style="color: #fbbf24;">Mapping decision</h4>
+      <p>Based on intent + actual data.</p>
+      <ul>
+        <li>Which fields get semantic_text?</li>
+        <li>Which are keyword (facets)?</li>
+        <li>Quantization strategy?</li>
+        <li>Data cleanup needed?</li>
+      </ul>
+    </div>
+    <div class="arrow">→</div>
+    <div class="ingest-box" style="border-color: #c084fc;">
+      <h4 style="color: #c084fc;">Pass 2: Final ingest</h4>
+      <p>Proper index with confirmed mapping.</p>
+      <ul>
+        <li>Create index with mapping</li>
+        <li>Reload data from source</li>
+        <li>Generate embeddings</li>
+        <li>Alias swap</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- THREE-COLUMN ARCHITECTURE -->
+<div class="section-box">
+  <h3>Skill Architecture</h3>
+  <div class="three-col">
+
+    <!-- Reference Knowledge -->
+    <div class="col-box">
+      <div class="col-label col-label-teal">Reference Knowledge</div>
+      <div class="ref-item">
+        <div class="ref-item-name">vector-hybrid-search.md</div>
+        <div class="ref-item-desc">Embedding strategies, quantization, ACORN, RRF, reranking, _slice, index modes</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-item-name">code-generation.md</div>
+        <div class="ref-item-desc">Client libraries, API patterns, ingest scripts, mapping templates per language</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-item-name">search-ui.md</div>
+        <div class="ref-item-desc">Frontend integration, React components, Next.js patterns</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-item-name">search-eval.md</div>
+        <div class="ref-item-desc">_rank_eval API, relevance measurement, P@K / MRR / DCG</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-item-name">rag-chatbot.md</div>
+        <div class="ref-item-desc">LangChain/LlamaIndex, context retrieval, LLM connection</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-item-name">keyword-search.md</div>
+        <div class="ref-item-desc">BM25, analyzers, filters, facets, autocomplete</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-item-name">catalog-ecommerce.md</div>
+        <div class="ref-item-desc">Product search, faceted navigation, merchandising</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-item-name">use-case-library.md</div>
+        <div class="ref-item-desc">Full map of what you can build, routing</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-item-name">mcp-setup.md</div>
+        <div class="ref-item-desc">Cluster MCP + Docs MCP configuration</div>
+      </div>
+    </div>
+
+    <!-- Conversation Engine (center, highlighted) -->
+    <div class="col-box highlighted">
+      <div class="col-label col-label-teal">Conversation Engine</div>
+      <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 16px;">The playbook sits at the center. It orchestrates when to load reference files, when to ask questions, and when to execute. Each step maps to specific reference knowledge.</p>
+
+      <div style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">
+        <strong style="color: #f1f5f9;">Principles:</strong>
+      </div>
+      <ul style="list-style: none; padding: 0;">
+        <li style="font-size: 12px; color: #cbd5e1; padding: 4px 0; padding-left: 16px; position: relative;"><span style="position: absolute; left: 0; color: #00bfb3;">1</span>One question at a time</li>
+        <li style="font-size: 12px; color: #cbd5e1; padding: 4px 0; padding-left: 16px; position: relative;"><span style="position: absolute; left: 0; color: #00bfb3;">2</span>Ingest before asking intent</li>
+        <li style="font-size: 12px; color: #cbd5e1; padding: 4px 0; padding-left: 16px; position: relative;"><span style="position: absolute; left: 0; color: #00bfb3;">3</span>Terse prompts (no jargon)</li>
+        <li style="font-size: 12px; color: #cbd5e1; padding: 4px 0; padding-left: 16px; position: relative;"><span style="position: absolute; left: 0; color: #00bfb3;">4</span>Ask before executing (write confirmation)</li>
+        <li style="font-size: 12px; color: #cbd5e1; padding: 4px 0; padding-left: 16px; position: relative;"><span style="position: absolute; left: 0; color: #00bfb3;">5</span>Skip irrelevant steps automatically</li>
+        <li style="font-size: 12px; color: #cbd5e1; padding: 4px 0; padding-left: 16px; position: relative;"><span style="position: absolute; left: 0; color: #00bfb3;">6</span>Contextualize every step (why asking)</li>
+        <li style="font-size: 12px; color: #cbd5e1; padding: 4px 0; padding-left: 16px; position: relative;"><span style="position: absolute; left: 0; color: #00bfb3;">7</span>Save code to notebook for reference</li>
+      </ul>
+    </div>
+
+    <!-- Live Capabilities -->
+    <div class="col-box">
+      <div class="col-label col-label-yellow">Live Capabilities</div>
+      <div class="live-item">
+        <div class="live-item-name">Cluster MCP</div>
+        <div class="live-item-desc">Read indices, mappings, and doc counts from the user's live cluster</div>
+      </div>
+      <div class="live-item">
+        <div class="live-item-name">Docs MCP</div>
+        <div class="live-item-desc">Look up latest API syntax, model IDs, and features from elastic.co/docs</div>
+      </div>
+      <div class="live-item">
+        <div class="live-item-name">Code execution</div>
+        <div class="live-item-desc">Run ingest scripts, search queries, and build UIs in the user's local environment</div>
+      </div>
+      <div class="live-item">
+        <div class="live-item-name">Web search fallback</div>
+        <div class="live-item-desc">Look up anything not in reference files (new features, model changes)</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div>
+</body>
+</html>

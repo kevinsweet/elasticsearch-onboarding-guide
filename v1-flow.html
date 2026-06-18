@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>v1 Flow — Use-Case-First Playbook</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    background: #0b1117;
+    color: #e2e8f0;
+    line-height: 1.6;
+    padding: 40px 20px;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .back-link { font-size: 13px; color: #64748b; text-decoration: none; display: inline-block; margin-bottom: 24px; }
+  .back-link:hover { color: #00bfb3; }
+  h1 { font-size: 32px; font-weight: 800; color: #ffffff; margin-bottom: 8px; }
+  .subtitle { font-size: 16px; color: #94a3b8; margin-bottom: 16px; max-width: 700px; }
+  .version-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: #3b2f1a;
+    color: #fbbf24;
+    margin-bottom: 32px;
+  }
+  .step { position: relative; margin-bottom: 0; padding-left: 48px; }
+  .step::before {
+    content: '';
+    position: absolute;
+    left: 18px;
+    top: 44px;
+    bottom: -1px;
+    width: 2px;
+    background: linear-gradient(to bottom, #334155, #1e293b);
+  }
+  .step:last-child::before { display: none; }
+  .step-number {
+    position: absolute;
+    left: 0;
+    top: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #1e293b;
+    border: 2px solid #334155;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fbbf24;
+    z-index: 2;
+  }
+  .step-card {
+    background: #151d2b;
+    border: 1px solid #1e293b;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+  }
+  .step-title { font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 4px; }
+  .step-context { font-size: 13px; color: #64748b; margin-bottom: 12px; }
+  .details-list { margin-top: 8px; padding: 0; list-style: none; }
+  .details-list li {
+    font-size: 13px;
+    color: #cbd5e1;
+    padding: 4px 0;
+    padding-left: 16px;
+    position: relative;
+  }
+  .details-list li::before { content: "→"; position: absolute; left: 0; color: #fbbf24; }
+  .section-box {
+    background: #151d2b;
+    border: 1px solid #1e293b;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-top: 48px;
+  }
+  .section-box h3 { font-size: 16px; font-weight: 700; color: #ffffff; margin-bottom: 16px; }
+  .ref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .ref-item {
+    background: #1a2332;
+    border: 1px solid #263040;
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .ref-item-name { font-size: 13px; font-weight: 600; color: #f1f5f9; margin-bottom: 4px; }
+  .ref-item-desc { font-size: 11px; color: #64748b; }
+  .changed-note {
+    margin-top: 48px;
+    padding: 20px 24px;
+    background: #1a2332;
+    border-left: 3px solid #f59e0b;
+    border-radius: 0 8px 8px 0;
+  }
+  .changed-note h4 { font-size: 14px; font-weight: 700; color: #fbbf24; margin-bottom: 8px; }
+  .changed-note p { font-size: 13px; color: #94a3b8; line-height: 1.6; }
+  .changed-note ul { list-style: none; padding: 0; margin-top: 12px; }
+  .changed-note li { font-size: 13px; color: #cbd5e1; padding: 4px 0; padding-left: 16px; position: relative; }
+  .changed-note li::before { content: "•"; position: absolute; left: 0; color: #f59e0b; }
+  @media (max-width: 768px) { .ref-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="container">
+
+<a class="back-link" href="index.html">← Back to overview</a>
+
+<h1>Skill v1: Use-Case-First Flow</h1>
+<p class="subtitle">The original 9-step playbook. Asked what you're building first, gathered extensive intent before touching data.</p>
+<span class="version-badge">Superseded by v2</span>
+
+<!-- STEP 1 -->
+<div class="step">
+  <div class="step-number">1</div>
+  <div class="step-card">
+    <div class="step-title">What are you building?</div>
+    <div class="step-context">First question. Use case determines which recipe files load and the overall flow shape.</div>
+    <ul class="details-list">
+      <li>Ecommerce / catalog search</li>
+      <li>RAG chatbot / Q&A</li>
+      <li>Recommendations / similarity</li>
+      <li>Agent memory / context store</li>
+      <li>Log / observability search</li>
+      <li>Enterprise knowledge search</li>
+    </ul>
+  </div>
+</div>
+
+<!-- STEP 2 -->
+<div class="step">
+  <div class="step-number">2</div>
+  <div class="step-card">
+    <div class="step-title">Intent questions</div>
+    <div class="step-context">Multiple questions asked upfront before any data is touched.</div>
+    <ul class="details-list">
+      <li>Who searches — people in a search bar, or code/API?</li>
+      <li>Natural language queries, exact terms, or both?</li>
+      <li>Do you need facets / filters?</li>
+      <li>Multi-tenant (many customers, one index)?</li>
+      <li>What does "good results" look like for you?</li>
+    </ul>
+  </div>
+</div>
+
+<!-- STEP 3 -->
+<div class="step">
+  <div class="step-number">3</div>
+  <div class="step-card">
+    <div class="step-title">Data source</div>
+    <div class="step-context">Where the data lives. Same options as v2, but asked after all intent questions.</div>
+    <ul class="details-list">
+      <li>File (JSON, CSV, NDJSON, Parquet, XML, Avro)</li>
+      <li>Database (Postgres, MySQL, MongoDB, DynamoDB, Redis, Cassandra)</li>
+      <li>Cloud storage (S3, GCS, Azure Blob)</li>
+      <li>Data warehouse (Snowflake, BigQuery, Redshift, Databricks)</li>
+      <li>Another search engine (Solr, OpenSearch, Pinecone, Weaviate)</li>
+      <li>SaaS / connectors (Confluence, SharePoint, Google Drive, Salesforce)</li>
+      <li>Streaming / API (Kafka, Kinesis, webhooks, REST APIs)</li>
+      <li>Already in Elasticsearch (reindex, remote reindex, export)</li>
+      <li>No data yet (sample dataset)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- STEP 4 -->
+<div class="step">
+  <div class="step-number">4</div>
+  <div class="step-card">
+    <div class="step-title">Language</div>
+    <div class="step-context">Programming language for generated code.</div>
+    <ul class="details-list">
+      <li>Python, JavaScript, Java, Go, cURL</li>
+    </ul>
+  </div>
+</div>
+
+<!-- STEP 5 -->
+<div class="step">
+  <div class="step-number">5</div>
+  <div class="step-card">
+    <div class="step-title">Ingest</div>
+    <div class="step-context">By this point the agent has gathered all context upfront. It designs the mapping AND ingests in one pass.</div>
+    <ul class="details-list">
+      <li>Mapping designed based on earlier intent answers</li>
+      <li>Index created with full mapping immediately</li>
+      <li>Data loaded with proper field types from the start</li>
+      <li>Single pass — no "quick load then re-map"</li>
+    </ul>
+  </div>
+</div>
+
+<!-- STEP 6 -->
+<div class="step">
+  <div class="step-number">6</div>
+  <div class="step-card">
+    <div class="step-title">Mapping</div>
+    <div class="step-context">Part of step 5 in practice — mapping was designed before ingest based on intent answers.</div>
+    <ul class="details-list">
+      <li>Field types chosen based on use-case answers</li>
+      <li>Embedding strategy selected based on intent</li>
+      <li>No "see the data first, then decide" — decided upfront</li>
+    </ul>
+  </div>
+</div>
+
+<!-- STEP 7 -->
+<div class="step">
+  <div class="step-number">7</div>
+  <div class="step-card">
+    <div class="step-title">Search validation</div>
+    <div class="step-context">Run a test query to confirm results.</div>
+    <ul class="details-list">
+      <li>Sample query run against indexed data</li>
+      <li>Results shown to user for confirmation</li>
+    </ul>
+  </div>
+</div>
+
+<!-- STEP 8 -->
+<div class="step">
+  <div class="step-number">8</div>
+  <div class="step-card">
+    <div class="step-title">Frontend / Pipeline</div>
+    <div class="step-context">Build the consuming layer.</div>
+    <ul class="details-list">
+      <li>Search UI for human-facing search</li>
+      <li>LangChain / LlamaIndex for RAG</li>
+      <li>API endpoint for machine consumers</li>
+      <li>Agent Builder integration</li>
+    </ul>
+  </div>
+</div>
+
+<!-- STEP 9 -->
+<div class="step">
+  <div class="step-number">9</div>
+  <div class="step-card">
+    <div class="step-title">Iterate</div>
+    <div class="step-context">Tune relevance, reindex, scale.</div>
+    <ul class="details-list">
+      <li>Relevance tuning (boosting, reranking, synonyms)</li>
+      <li>_rank_eval for measurement</li>
+      <li>Reindex if mapping changes needed</li>
+      <li>Production scaling (quantization, multi-tenancy)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- REFERENCE KNOWLEDGE -->
+<div class="section-box">
+  <h3>Reference Knowledge (same files as v2)</h3>
+  <p style="font-size: 13px; color: #94a3b8; margin-bottom: 16px;">The same reference files existed in v1. The difference was when they loaded — v1 loaded recipe files immediately based on use-case answer, before seeing any data.</p>
+  <div class="ref-grid">
+    <div class="ref-item">
+      <div class="ref-item-name">vector-hybrid-search.md</div>
+      <div class="ref-item-desc">Embedding strategies, quantization, ACORN, RRF, reranking, _slice, index modes</div>
+    </div>
+    <div class="ref-item">
+      <div class="ref-item-name">code-generation.md</div>
+      <div class="ref-item-desc">Client libraries, API patterns, ingest scripts, mapping templates per language</div>
+    </div>
+    <div class="ref-item">
+      <div class="ref-item-name">search-ui.md</div>
+      <div class="ref-item-desc">Frontend integration, React components, Next.js patterns, connector vs direct</div>
+    </div>
+    <div class="ref-item">
+      <div class="ref-item-name">search-eval.md</div>
+      <div class="ref-item-desc">_rank_eval API, relevance measurement, judgment lists, P@K / MRR / DCG</div>
+    </div>
+    <div class="ref-item">
+      <div class="ref-item-name">rag-chatbot.md</div>
+      <div class="ref-item-desc">LangChain/LlamaIndex integration, context retrieval, LLM connection</div>
+    </div>
+    <div class="ref-item">
+      <div class="ref-item-name">keyword-search.md</div>
+      <div class="ref-item-desc">BM25, analyzers, filters, facets, autocomplete, full-text patterns</div>
+    </div>
+    <div class="ref-item">
+      <div class="ref-item-name">catalog-ecommerce.md</div>
+      <div class="ref-item-desc">Product search, faceted navigation, synonyms, query rules, merchandising</div>
+    </div>
+    <div class="ref-item">
+      <div class="ref-item-name">use-case-library.md</div>
+      <div class="ref-item-desc">Full map of what you can build, use case routing, industry examples</div>
+    </div>
+    <div class="ref-item">
+      <div class="ref-item-name">mcp-setup.md</div>
+      <div class="ref-item-desc">Cluster MCP + Docs MCP configuration, persistent read access</div>
+    </div>
+  </div>
+</div>
+
+<!-- WHAT CHANGED -->
+<div class="changed-note">
+  <h4>What changed (v1 → v2)</h4>
+  <p>Testing revealed that users didn't want to answer 5+ upfront questions before seeing anything happen. They wanted data in immediately. The agent also gave better recommendations when it could see actual fields instead of relying on abstract answers about intent.</p>
+  <ul>
+    <li>Use-case question moved from step 1 to after ingest — asked once data is visible</li>
+    <li>Intent questions (who searches, natural language vs exact) moved to after ingest</li>
+    <li>"Where's your data?" became the first question — minimum needed to connect</li>
+    <li>Single-pass mapping replaced with two-pass (quick load → mapping decision → reload)</li>
+    <li>All prompts made terse — one question at a time, minimal explanation</li>
+    <li>Write Confirmation Protocol retained (ask before executing)</li>
+    <li>MCP auto-configuration added (no manual cluster setup)</li>
+  </ul>
+</div>
+
+</div>
+</body>
+</html>
